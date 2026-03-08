@@ -5,7 +5,7 @@ import validateEnrollment from "../middleware/validateEnrollment.js";
 const router = express.Router();
 
 router.get("/courses", async (req, res) => {
-  const { data, error } = await supabase.from(course).select("*");
+  const { data, error } = await supabase.from("course").select("*");
 
   if (error) {
     return res.status(500).json({ error: error.message });
@@ -14,8 +14,9 @@ router.get("/courses", async (req, res) => {
 });
 
 router.post("/enroll", validateEnrollment, async (req, res) => {
-  const { student_name, course_id } = req.supabase
-    .from(enrollments)
+  const { student_name, course_id } = req.body
+  const {data,error}=await supabase
+    .from("enrollments")
     .insert([{ student_name, course_id }]);
 
   if (error) {
@@ -30,7 +31,8 @@ router.post("/enroll", validateEnrollment, async (req, res) => {
 router.get("/courses/:id/enrollments", async (req, res) => {
   const { data, error } = await supabase
     .from("enrollments")
-    .select("*".eq("course_id", course_id));
+    .select("*")
+    .eq("course_id", course_id);
   if (error) {
     return res.status(500).json({ error: error.message });
   }
